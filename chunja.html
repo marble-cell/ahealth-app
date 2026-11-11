@@ -38,6 +38,15 @@
   }
   .guide b { color: var(--blue); }
   .guide.show { display: block; }
+  .top {
+    display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 9;
+    padding: 14px 64px 14px 18px; background: #1b2430; color: #fff;
+    font-size: 15px; line-height: 1.5; text-align: left;
+  }
+  .top b { color: #6cc4ff; }
+  .top .arrow { position: absolute; top: 4px; right: 18px; font-size: 30px; line-height: 1; }
+  .top.show { display: block; }
+  .alt { margin-top: 12px; font-size: 13px; color: var(--sub); text-align: center; }
 </style>
 </head>
 <body>
@@ -46,26 +55,39 @@
   <h1>춘자가 맨날 쓰는 앱<br><span class="hl">에이헬스</span></h1>
   <p class="sub">건강해지면 돈이 쌓이는 앱</p>
 </main>
+<div id="top" class="top">
+  <span class="arrow">↗</span>
+  틱톡에서는 바로 다운이 안 돼요.<br>
+  오른쪽 위 <b>⋯</b> 누르고 <b>브라우저에서 열기</b>를 눌러 주세요.
+</div>
 <footer>
-  <!-- target="_blank": 틱톡·인스타 앱 안 브라우저에서 사파리로 빠져나가게 하는 부분 -->
   <a id="go" class="btn" href="https://ahealth.onelink.me/0mmS/chunja?af_sub1=tiktok" target="_blank" rel="noopener">앱 다운받기 &gt;</a>
   <div id="guide" class="guide">
     앱스토어가 안 열리면<br>
     오른쪽 위 <b>⋯</b> 버튼을 누르고 <b>브라우저에서 열기</b>를 눌러 주세요.
   </div>
+  <p class="alt">앱스토어·플레이스토어에서 <b>에이헬스</b>를 검색해도 돼요</p>
 </footer>
 <script>
   (function () {
     var ua = navigator.userAgent || "";
-    var inApp = /BytedanceWebview|musical_ly|TikTok|Instagram|FBAN|FBAV|KAKAOTALK/i.test(ua);
+    var ios = /iPhone|iPad|iPod/i.test(ua);
+    var tiktok = /BytedanceWebview|musical_ly|TikTok|trill/i.test(ua);
+    var inApp = tiktok || /Instagram|FBAN|FBAV|KAKAOTALK/i.test(ua);
     var btn = document.getElementById("go");
     var guide = document.getElementById("guide");
-    btn.addEventListener("click", function () {
+    // 아이폰 틱톡: 앱스토어로 넘기는 걸 막으니 처음부터 브라우저 열기 안내를 띄운다
+    if (ios && tiktok) document.getElementById("top").classList.add("show");
+    btn.addEventListener("click", function (e) {
       if (!inApp) return;
-      // 넘어가지 못하고 이 화면에 남아 있으면 1.5초 뒤 안내를 보여 준다
+      if (ios) {
+        // 사파리로 이 페이지를 다시 연다. 사파리에서는 버튼이 바로 앱스토어로 간다
+        e.preventDefault();
+        location.href = "x-safari-" + location.href;
+      }
       setTimeout(function () {
         if (document.visibilityState === "visible") guide.classList.add("show");
-      }, 1500);
+      }, 1200);
     });
   })();
 </script>
